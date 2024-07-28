@@ -1,0 +1,23 @@
+<?php
+if ($block->isModuleEnabled()) { ?>
+<?php $cmsResults = $this->getCmsResults(); ?>
+<?php if ($cmsResults->getSize() > 0): ?>
+    <div class="cms-search-results">
+        <h3><?php echo $this->escapeHtml(__('Pages Matching Your Search:')); ?></h3>
+        <ul>
+            <?php foreach ($cmsResults as $cmsPage): ?>
+                <?php
+                if ($cmsPage->getData('page_layout') == 'custom') {
+                    continue;
+                }
+                ?>
+                <li>
+                    <a href="<?php echo $this->getCmsPageUrl($cmsPage->getIdentifier()); ?>">
+                        <?php echo $cmsPage->getTitle(); ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<?php } ?>

@@ -1,0 +1,43 @@
+{
+    "name": "degriznet/m2_searchcms",
+    "description": "Magento 2 module that displays cms pages results.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": [
+        "MIT"
+    ],
+    "authors": [
+        {
+            "name": "Anže Voh",
+            "email": "anze@degriz.net",
+            "homepage": "https://github.com/DegrizNet",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "~7.1.3||~7.2.0||~7.3.0||~7.4.0||~8.0.0||~8.1.0||~8.2.0",
+        "magento/framework": "^102.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Magelan\\MinicartTotal\\": ""
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/DegrizNet/m2_minicarttotal.git"
+        }
+    ],
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Magelan/MinicartTotal"
+            ]
+        ]
+    }
+}
