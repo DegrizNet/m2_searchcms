@@ -74,6 +74,10 @@ class SearchResults extends Template
             $orConditions
         );
 
+        // Only active pages of the current store
+        $cmsPageCollection->addFieldToFilter('is_active', 1);
+        $cmsPageCollection->addStoreFilter($this->_storeManager->getStore()->getId());
+
         // You can further customize the collection, e.g., sorting, limiting results, etc.
 
         return $cmsPageCollection;

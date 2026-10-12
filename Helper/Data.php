@@ -6,7 +6,7 @@ use Magento\Store\Model\ScopeInterface;
 
 class Data extends AbstractHelper
 {
-    const XML_PATH_ENABLED = 'magelan_searchcms/general/enabled';
+    const XML_PATH_ENABLED = 'searchcms/general/enabled';
 
     public function isModuleEnabled($store = null)
     {
