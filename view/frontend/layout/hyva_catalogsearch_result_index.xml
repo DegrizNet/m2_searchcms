@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Hyvä: Tailwind templates instead of the Luma ones, no Luma stylesheet.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <remove src="Magelan_SearchCms::css/searchcms.css"/>
+    </head>
+    <body>
+        <referenceBlock name="custom.search.results" template="Magelan_SearchCms::hyva/search_results.phtml"/>
+        <referenceBlock name="magelan.searchcms.below" template="Magelan_SearchCms::hyva/search_results.phtml"/>
+    </body>
+</page>

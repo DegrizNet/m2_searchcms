@@ -1,15 +1,32 @@
 <?php
+/**
+ * Magelan_SearchCms
+ */
+declare(strict_types=1);
+
 namespace Magelan\SearchCms\Helper;
 
+use Magelan\SearchCms\Model\Config;
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\Helper\Context;
 
+/**
+ * @deprecated 2.0.0 use \Magelan\SearchCms\Model\Config; kept for code written against 1.x
+ */
 class Data extends AbstractHelper
 {
-    const XML_PATH_ENABLED = 'searchcms/general/enabled';
+    public const XML_PATH_ENABLED = Config::XML_ENABLED;
 
-    public function isModuleEnabled($store = null)
+    public function __construct(Context $context, private readonly Config $config)
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_ENABLED, ScopeInterface::SCOPE_STORE, $store);
+        parent::__construct($context);
+    }
+
+    /**
+     * @param int|string|null $store
+     */
+    public function isModuleEnabled($store = null): bool
+    {
+        return $this->config->isEnabled($store);
     }
 }

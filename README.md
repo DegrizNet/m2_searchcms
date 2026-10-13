@@ -1,54 +1,108 @@
-# Magento 2 - Search CMS Pages
+# Magelan_SearchCms - Search CMS Pages ("Iskanje po CMS straneh")
 
-This module displays search results for CMS page hits. The results are displayed at the top of the search page.
+CMS pages (and, optionally, Magelan Blog posts) in the search results, for Magento 2.4.6 - 2.4.9
+(PHP 8.1 - 8.4), Luma and Hyvä.
 
-## Author
+A shopper searches for "delivery" or "returns" and, next to the products, gets your pages that answer
+the question: title, a short excerpt with the search term highlighted, and a link. Fewer questions by
+e-mail, more shoppers who find the answer themselves.
 
-Anže Voh  
-[Magento eCommerce Developer](https://www.degriz.net/) at Degriz
+## What it does
 
-## Installation
+* **Block "Pages matching your search"** on the search results page, above the products (default) or
+  below them. When the search finds no products the block always stands above the "no results"
+  message, because the pages are then the only useful result.
+* **Rows:** page title (one line, ellipsis for long titles, full title in the tooltip), excerpt of about
+  160 characters around the first match (2 lines) with the term on a light background and in bold, a
+  "Blog" label on blog posts. No page path under the title.
+* **How many:** the setting "Maximum results shown" (default 5) on desktop, 3 on phones; the other
+  results are under "Show all N" (a `<details>` element, no JavaScript). At most 50 results in total.
+* **Search:** every term must occur (title, main heading, meta title/keywords/description or text);
+  only when no page has all of them, pages with at least half of the terms (min. 2) are shown.
+  Diacritics and case are ignored ("vracilo" finds "Vračilo"), extra spaces and punctuation never
+  produce an empty term, terms under 2 characters and common stop words (sl, hr, en, de) do not count,
+  `%` and `_` are searched literally.
+* **Ranking:** exact title 100, term in the title 50, in the main heading 30, in meta data 20, in the
+  text 5 per occurrence (max. 20); then by title.
+* **Search list:** its own table `magelan_searchcms_index` with the plain text of each page per store
+  view (HTML, scripts, styles and `{{...}}` directives removed, Page Builder markup reduced to text). It
+  is **built automatically on installation/upgrade** and kept fresh when a page (or blog post) is saved
+  or deleted, in the admin, through the REST API or through the page repository.
+* **Only what the shopper may see:** active pages assigned to the current store view or to "All Store
+  Views"; a store view page replaces an "All Store Views" page with the same URL key. Pages can be
+  excluded by URL key (default: `no-route`, `home`, `enable-cookies`,
+  `privacy-policy-cookie-restriction-mode`; a trailing `*` matches any ending).
+* **Blog (optional):** with Magelan Blog installed, "Search blog posts too" adds published posts
+  (per store view translation, only from their publication date on).
+* **Full page cache:** the block carries the cache tags of the pages it shows and of the search list,
+  so editing a page refreshes cached results pages.
+* **Public service** `Magelan\SearchCms\Api\ContentSearchInterface::search($query, $limit, $storeId,
+  $withSnippet)` for other modules (e.g. a search suggestions drawer).
+* **Translations:** English, Slovenian, Croatian, German.
 
-Follow these steps to install the module:
+## Installing / upgrading
 
-1. **Download the Module:** Obtain the module from this repository.
-2. **Upload the Files:** Create the folder `app/code/Magelan/MinicartTotal` and copy the contents of the module into this folder.
-3. **Enable the Module and Run Setup:** Use the following commands in your terminal (for production mode):
+```
+composer require degriznet/m2_searchcms
+bin/magento setup:upgrade
+bin/magento setup:di:compile        # production mode
+bin/magento cache:flush
+```
 
-    ```sh
-    php bin/magento maintenance:enable 
-    php bin/magento module:enable Magelan_SearchCms
-    php bin/magento setup:upgrade
-    php -dmemory_limit=4G bin/magento setup:di:compile
-    rm -rf pub/static/_requirejs var/view_preprocessed pub/static/frontend/ pub/static/adminhtml/  
-    php bin/magento setup:static-content:deploy -f
-    php bin/magento maintenance:disable
-    php bin/magento cache:flush
-    ```
+Hyvä: the module registers itself for the Tailwind build; run `bin/magento hyva:config:generate` and
+rebuild the theme CSS (`npm run build` in the theme's `web/tailwind`).
 
-## Notice
+**Upgrading from 1.x needs no manual step:** the table comes from the declarative schema and the search
+list is built by a data patch. A 1.x shop that never saved the "Enabled" field had the block switched
+off; it stays off after the upgrade (switch it on in the settings). A saved value is kept.
 
-- Always test the module on a development version before deploying it to your production environment.
-- Ensure to review and manage your privacy settings in accordance with legal requirements and best practices.
+## Settings
 
-## License
+*Stores > Configuration > Magelan > Search CMS Pages* (section `searchcms`, unchanged from 1.x):
 
-This project is licensed under the [MIT License](LICENSE).
+| Group | Field | Default |
+| --- | --- | --- |
+| General | Enabled | Yes (new installations) |
+| | Block position: above / below the products | above |
+| | Maximum results shown (desktop; phones show at most 3) | 5 |
+| | Show text excerpt | Yes |
+| Content | Excluded pages (URL keys, one per line, `*` at the end) | 4 system pages |
+| | Search blog posts too (only with Magelan Blog) | No |
+| | Minimum text length (characters, 0 = all) | 0 |
+| Page search list | Status ("Built: 24 pages, last ...") and the **Rebuild** button | |
 
-## Disclaimer
+Command line: `bin/magento magelan:searchcms:reindex`. Log: `var/log/magelan_searchcms.log`.
 
-- This module is provided "as is," without any warranty of any kind, express or implied. Use it at your own risk.
-- The author takes no responsibility for any issues or problems that arise from using this module.
-- Free support is not provided.
-- You are free to use and modify this module, but you cannot resell it.
+## Themes
 
-## Additional Information
+* **Luma and Luma-based themes:** `templates/search_results.phtml` and `web/css/searchcms.css` (CSS
+  variables `--mgl-cms-ink`, `--mgl-cms-soft`, `--mgl-cms-mark`, `--mgl-cms-radius`). The block keeps the
+  1.x class `cms-search-results`.
+* **Hyvä 1.3+ (Tailwind 3 and 4):** `hyva_catalogsearch_result_index.xml` switches to
+  `templates/hyva/search_results.phtml` (Tailwind, no Alpine, no JavaScript). Colours follow the theme
+  colour `--color-primary`; override them in the theme CSS, for example
+  `.mgl-cms-hv { --mgl-cms-ink: #c2410c; --mgl-cms-mark: #ffedd5; }`.
+* Both blocks are named `custom.search.results` (above, kept from 1.x) and `magelan.searchcms.below`
+  in the container `content`, before/after `search.result`. A theme that moves or removes
+  `search.result` should place them itself.
 
-I specialize in custom Magento development and have successfully completed numerous projects tailored to optimize eCommerce functionalities. My services include:
+## Known limits
 
-- **Custom Module Development:** Creating tailored solutions to meet your specific business needs.
-- **Integration Services:** Implementing and integrating third-party services such as Snap Pixel to enhance your advertising efforts.
-- **Performance Optimization:** Ensuring that your Magento store runs efficiently and provides a seamless user experience.
-- **Ongoing Support and Maintenance:** Offering support to keep your Magento store up-to-date and running smoothly.
+* Content that a page pulls in through `{{block}}` / `{{widget}}` directives or CMS blocks is not
+  searched (directives are not executed while indexing).
+* Matching is by substring, without stemming ("jogo" does not find "joga"; "mat" also finds "format").
+* Other blogs (FishPig WordPress, Magefan Blog) and CMS blocks are not searched.
+* For shops with many hundreds of long pages the `LIKE` search on the folded text gets slower; use
+  "Minimum text length" and exclusions to keep the list short.
 
-For more information or inquiries, please visit [Degriz Magento eCommerce Development](https://www.degriz.net/).
+## Tests
+
+* Unit tests: `cd dev/ci && composer install && php vendor/bin/phpunit` (the harness is not part of
+  the package).
+* `dev/integration-check.php`: creates temporary CMS pages on an installation and checks indexing,
+  folding, ranking, AND/OR, exclusions, store views, deactivation, deletion, excerpts and a full
+  rebuild (`php app/code/Magelan/SearchCms/dev/integration-check.php <store_id> [<other_store_id>]`).
+
+## Licence
+
+See `LICENSE.txt`.

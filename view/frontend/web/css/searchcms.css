@@ -1,0 +1,85 @@
+/**
+ * Magelan_SearchCms - "Pages matching your search" (Luma). No JavaScript.
+ *
+ * Colours are CSS variables; override them in your theme (e.g. in _extend.less or any stylesheet):
+ *   .cms-search-results { --mgl-cms-ink: #c2410c; --mgl-cms-soft: #fff4ed; --mgl-cms-mark: #ffedd5; }
+ * ink = title, links, counter (keep 4.5:1 contrast on white); soft = counter background; mark = highlighted term.
+ */
+.mgl-cms {
+    --mgl-cms-ink: #006bb4;
+    --mgl-cms-ink-hover: #00508a;
+    --mgl-cms-soft: #e8f1f8;
+    --mgl-cms-mark: #ffe9a3;
+    --mgl-cms-border: #c2c2c2;
+    --mgl-cms-line: #e3e3e3;
+    --mgl-cms-text: #333;
+    --mgl-cms-muted: #575757;
+    --mgl-cms-radius: 0;
+    box-sizing: border-box;
+    margin: 0 0 25px;
+    padding: 16px 20px 4px;
+    border: 1px solid var(--mgl-cms-border);
+    border-radius: var(--mgl-cms-radius);
+    background: #fff;
+    color: var(--mgl-cms-text);
+}
+.mgl-cms--below { margin: 30px 0 25px; }
+.mgl-cms *, .mgl-cms *::before, .mgl-cms *::after { box-sizing: border-box; }
+.mgl-cms__head { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.mgl-cms__icon { flex: none; color: var(--mgl-cms-ink); }
+.mgl-cms__title { margin: 0; font-size: 1.8rem; font-weight: 600; line-height: 1.3; color: var(--mgl-cms-text); }
+.mgl-cms__count {
+    flex: none; padding: 1px 9px; border-radius: 999px; background: var(--mgl-cms-soft);
+    color: var(--mgl-cms-ink); font-size: 1.3rem; font-weight: 700; line-height: 1.6;
+}
+.mgl-cms__sr {
+    position: absolute !important; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.mgl-cms__list { margin: 0; padding: 0; list-style: none; }
+.mgl-cms .mgl-cms__hit {
+    display: flex; flex-direction: column; justify-content: center; gap: 3px; min-height: 56px;
+    margin: 0; padding: 11px 0; border-top: 1px solid var(--mgl-cms-line);
+}
+.mgl-cms__row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.mgl-cms .mgl-cms__link {
+    display: block; min-width: 0; min-height: 24px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    color: var(--mgl-cms-ink); font-size: 1.5rem; font-weight: 600; line-height: 24px; text-decoration: none;
+}
+.mgl-cms .mgl-cms__link:hover { color: var(--mgl-cms-ink-hover); text-decoration: underline; }
+.mgl-cms .mgl-cms__link:focus-visible, .mgl-cms__toggle:focus-visible {
+    outline: 2px solid var(--mgl-cms-ink); outline-offset: 3px; border-radius: 2px;
+}
+.mgl-cms__badge {
+    flex: none; padding: 0 7px; border: 1px solid var(--mgl-cms-line); border-radius: 3px; color: var(--mgl-cms-muted);
+    font-size: 1.1rem; font-weight: 600; line-height: 1.7; text-transform: uppercase; letter-spacing: .04em;
+}
+.mgl-cms__snippet {
+    display: -webkit-box; margin: 0; overflow: hidden; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    color: var(--mgl-cms-text); font-size: 1.3rem; line-height: 1.5;
+}
+.mgl-cms mark { padding: 0 1px; border-radius: 2px; background: var(--mgl-cms-mark); color: inherit; font-weight: 700; }
+.mgl-cms__more { border-top: 1px solid var(--mgl-cms-line); }
+.mgl-cms__toggle {
+    display: flex; align-items: center; gap: 8px; min-height: 48px; cursor: pointer; list-style: none;
+    color: var(--mgl-cms-ink); font-size: 1.4rem; font-weight: 600;
+}
+.mgl-cms__toggle::-webkit-details-marker { display: none; }
+.mgl-cms__toggle::marker { content: ''; }
+.mgl-cms__chevron { flex: none; transition: transform .15s ease; }
+.mgl-cms__more[open] > .mgl-cms__toggle .mgl-cms__chevron { transform: rotate(180deg); }
+.mgl-cms__more[open] > .mgl-cms__toggle .mgl-cms__show,
+.mgl-cms__more:not([open]) > .mgl-cms__toggle .mgl-cms__hide { display: none; }
+
+/* Phones: 3 rows, the rest under "Show all"; from 768px: the configured number of rows. */
+@media (max-width: 767px) {
+    .mgl-cms { padding: 14px 16px 2px; }
+    .mgl-cms__title { flex: 1; font-size: 1.6rem; }
+    .mgl-cms .mgl-cms__hit--wide { display: none; }
+}
+@media (min-width: 768px) {
+    .mgl-cms .mgl-cms__hit--narrow, .mgl-cms__more--narrow { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mgl-cms__chevron { transition: none; }
+}

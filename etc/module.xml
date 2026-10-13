@@ -1,5 +1,16 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Magelan_SearchCms ("Search CMS Pages" / "Iskanje po CMS straneh")
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Magelan_SearchCms" setup_version="1.0.0">
+    <module name="Magelan_SearchCms">
+        <sequence>
+            <module name="Magento_Store"/>
+            <module name="Magento_Cms"/>
+            <module name="Magento_Search"/>
+            <module name="Magento_CatalogSearch"/>
+        </sequence>
     </module>
 </config>

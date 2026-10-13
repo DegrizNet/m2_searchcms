@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!--
+    Hyvä: registers the module for the theme's Tailwind build (app/etc/hyva-themes.json).
+    Fired only by Hyva_Theme (bin/magento hyva:config:generate); without Hyvä nothing happens.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="hyva_config_generate_before">
+        <observer name="magelan_searchcms_hyva_config" instance="Magelan\SearchCms\Observer\RegisterModuleForHyvaConfig"/>
+    </event>
+</config>

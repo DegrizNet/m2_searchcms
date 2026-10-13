@@ -1,0 +1,28 @@
+{
+    "magelan_searchcms_index": {
+        "column": {
+            "row_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "store_id": true,
+            "identifier": true,
+            "title": true,
+            "title_f": true,
+            "heading_f": true,
+            "meta_f": true,
+            "body": true,
+            "body_f": true,
+            "body_length": true,
+            "available_from": true,
+            "updated_at": true
+        },
+        "index": {
+            "MAGELAN_SEARCHCMS_INDEX_STORE_ID_ENTITY_TYPE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "MAGELAN_SEARCHCMS_INDEX_ENTITY_TYPE_ENTITY_ID_STORE_ID": true,
+            "MAGELAN_SEARCHCMS_INDEX_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}

@@ -1,8 +1,31 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
+<!--
+/**
+ * "Pages matching your search": one instance above and one below the product list. Only the one that matches
+ * Stores > Configuration > Magelan > Search CMS Pages > Position renders; without products it is always the
+ * one above (over the "no results" message).
+ */
+-->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Magelan_SearchCms::css/searchcms.css"/>
+    </head>
     <body>
         <referenceContainer name="content">
-            <block class="Magelan\SearchCms\Block\SearchResults" name="custom.search.results" template="Magelan_SearchCms::search_results.phtml" before="-"/>
+            <block class="Magelan\SearchCms\Block\SearchResults" name="custom.search.results"
+                   template="Magelan_SearchCms::search_results.phtml" before="search.result">
+                <arguments>
+                    <argument name="position" xsi:type="string">above</argument>
+                    <argument name="view_model" xsi:type="object">Magelan\SearchCms\ViewModel\SearchResults</argument>
+                </arguments>
+            </block>
+            <block class="Magelan\SearchCms\Block\SearchResults" name="magelan.searchcms.below"
+                   template="Magelan_SearchCms::search_results.phtml" after="search.result">
+                <arguments>
+                    <argument name="position" xsi:type="string">below</argument>
+                    <argument name="view_model" xsi:type="object">Magelan\SearchCms\ViewModel\SearchResults</argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

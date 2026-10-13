@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Keeps the search list fresh in every area (admin, REST API, imports through the repository).
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="cms_page_save_after">
+        <observer name="magelan_searchcms_page_saved" instance="Magelan\SearchCms\Observer\CmsPageSaved"/>
+    </event>
+    <event name="cms_page_delete_after">
+        <observer name="magelan_searchcms_page_deleted" instance="Magelan\SearchCms\Observer\CmsPageDeleted"/>
+    </event>
+    <!-- Magelan Blog (optional): matched by class name inside the observer -->
+    <event name="model_save_after">
+        <observer name="magelan_searchcms_blog_saved" instance="Magelan\SearchCms\Observer\BlogPostChanged"/>
+    </event>
+    <event name="model_delete_after">
+        <observer name="magelan_searchcms_blog_deleted" instance="Magelan\SearchCms\Observer\BlogPostChanged"/>
+    </event>
+</config>

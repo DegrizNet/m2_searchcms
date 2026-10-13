@@ -1,106 +1,84 @@
 <?php
+/**
+ * Magelan_SearchCms
+ */
+declare(strict_types=1);
+
 namespace Magelan\SearchCms\Block;
 
+use Magelan\SearchCms\Model\Config;
+use Magelan\SearchCms\ViewModel\SearchResults as ViewModel;
+use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\View\Element\Template;
-use Magento\Cms\Model\ResourceModel\Page\CollectionFactory;
-use Magento\UrlRewrite\Model\UrlFinderInterface; 
-use Magento\Framework\App\Request\Http;
-use Magelan\SearchCms\Helper\Data;
 
-class SearchResults extends Template
+/**
+ * "Pages matching your search" on the search results page. The layout places two instances, one above
+ * and one below the product list (argument "position"); only the one matching the setting renders.
+ * The class name is kept from 1.x for themes that reference it.
+ */
+class SearchResults extends Template implements IdentityInterface
 {
-    protected $request;
-    protected $cmsPageCollectionFactory;
+    private const RESULT_BLOCK = 'search.result';
 
-    public function __construct(
-        Template\Context $context,
-        Http $request,
-        CollectionFactory $cmsPageCollectionFactory,
-        UrlFinderInterface $urlFinder,
-        Data $helper,
-        array $data = []
-    ) {
-        $this->request = $request;
-        $this->cmsPageCollectionFactory = $cmsPageCollectionFactory;
-        $this->urlFinder = $urlFinder;
-        $this->helper = $helper;
-        parent::__construct($context, $data);
+    public function getViewModel(): ViewModel
+    {
+        /** @var ViewModel $viewModel */
+        $viewModel = $this->getData('view_model');
+
+        return $viewModel;
     }
 
-    public function isModuleEnabled()
+    public function getPosition(): string
     {
-        return $this->helper->isModuleEnabled();
+        return $this->getData('position') === Config::POSITION_BELOW ? Config::POSITION_BELOW : Config::POSITION_ABOVE;
     }
 
-    public function getSearchQuery()
+    /**
+     * @deprecated 2.0.0 kept for themes that called it from a 1.x template
+     */
+    public function isModuleEnabled(): bool
     {
-        return $this->request->getParam('q');
+        return $this->getViewModel()->isEnabled();
     }
 
-    protected $searchTerm;
-
-    public function setSearchTerm($searchTerm)
+    public function shouldRender(): bool
     {
-        $this->searchTerm = $searchTerm;
-        return $this;
+        return $this->getViewModel()->rendersAt($this->getPosition(), $this->hasProducts());
     }
 
-    public function getCmsPages()
+    /**
+     * Whether the catalog search found products (read from the core result block).
+     */
+    public function hasProducts(): bool
     {
-        $searchQuery = $this->getSearchQuery();
-        $searchTerm = $this->searchTerm ?: $searchQuery;
-
-        // Split the search query into individual words
-        $searchTerms = explode(' ', $searchTerm);
-
-        // Create a CMS page collection
-        $cmsPageCollection = $this->cmsPageCollectionFactory->create();
-
-        // Create an array to store the OR conditions for filtering
-        $orConditions = [];
-
-        foreach ($searchTerms as $term) {
-            $orConditions[] = [
-                'like' => '%' . $term . '%'
-            ];
+        $result = $this->getLayout()->getBlock(self::RESULT_BLOCK);
+        if (!$result || !method_exists($result, 'getResultCount')) {
+            return true;
         }
-
-        // Apply filters to search by title or content for any of the terms
-        $cmsPageCollection->addFieldToFilter(
-            [
-                'title',
-                'content'
-            ],
-            $orConditions
-        );
-
-        // Only active pages of the current store
-        $cmsPageCollection->addFieldToFilter('is_active', 1);
-        $cmsPageCollection->addStoreFilter($this->_storeManager->getStore()->getId());
-
-        // You can further customize the collection, e.g., sorting, limiting results, etc.
-
-        return $cmsPageCollection;
-    }
-
-    public function getCmsResults()
-    {
-        return $this->getCmsPages();
-    }
-
-
-    public function getCmsPageUrl($pageIdentifier)
-    {
-        $rewrite = $this->urlFinder->findOneByData([
-            'request_path' => $pageIdentifier,
-            'store_id' => $this->_storeManager->getStore()->getId()
-        ]);
-        if ($rewrite && $rewrite->getRequestPath()) {
-            return $this->_storeManager->getStore()->getBaseUrl() . $rewrite->getRequestPath();
-        } else {
-            // If no URL rewrite is found, you may use a default URL or other logic.
-            return $this->_storeManager->getStore()->getBaseUrl() . 'cms/page/view/page_id/' . $pageIdentifier;
+        try {
+            return (int) $result->getResultCount() > 0;
+        } catch (\Throwable $e) {
+            return true;
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getIdentities()
+    {
+        return $this->getViewModel()->getIdentities();
+    }
+
+    /**
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if (!$this->getViewModel()->isEnabled() || !$this->shouldRender()) {
+            return '';
+        }
+
+        return parent::_toHtml();
+    }
 }

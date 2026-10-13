@@ -1,18 +1,79 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
+<!--
+/**
+ * Stores > Configuration > Magelan > Search CMS Pages. Section id "searchcms" and the path
+ * searchcms/general/enabled are kept from 1.x (saved values and guides keep working). Band 500 (content/SEO).
+ * The module has no admin page of its own, so it has no menu item.
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="Magelan" translate="label" sortOrder="300">
-            <label><![CDATA[Magelan]]></label>
+            <label>Magelan</label>
         </tab>
         <section id="searchcms" translate="label" type="text" sortOrder="510" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Search CMS Configuration</label>
+            <label>Search CMS Pages</label>
             <tab>Magelan</tab>
             <resource>Magelan_SearchCms::config_system</resource>
-            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Search Results Block</label>
+            <group id="general" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <comment>The block "Pages matching your search" on the search results page: title, excerpt with the search term highlighted, link.</comment>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="position" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Block position</label>
+                    <source_model>Magelan\SearchCms\Model\Source\Position</source_model>
+                    <comment>When the search finds no products, the block is always shown above the "no results" message.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="max_results" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximum results shown</label>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-50</validate>
+                    <comment>The other results are under "Show all N". Phones show at most 3. Recommended: 3 to 8.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="show_snippet" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show text excerpt</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>About 160 characters around the search term, which is highlighted. With "No" only the page title is shown.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="content" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Content</label>
+                <field id="excluded" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Excluded pages</label>
+                    <backend_model>Magelan\SearchCms\Model\Config\Backend\Exclusions</backend_model>
+                    <comment>CMS page identifiers, one per line. A "*" at the end matches any ending (cookie*). Disabled pages and pages not assigned to the store view are never found.</comment>
+                </field>
+                <field id="include_blog" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Search blog posts too</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_model>Magelan\SearchCms\Block\Adminhtml\System\Config\BlogField</frontend_model>
+                </field>
+                <field id="min_length" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum text length</label>
+                    <validate>validate-digits</validate>
+                    <comment>Pages with less text (in characters) are left out. 0 = all pages.</comment>
+                </field>
+            </group>
+            <group id="index" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Page search list</label>
+                <field id="status" translate="label" type="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Status</label>
+                    <frontend_model>Magelan\SearchCms\Block\Adminhtml\System\Config\IndexStatus</frontend_model>
+                </field>
+                <field id="rebuild" translate="label" type="button" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Rebuild</label>
+                    <frontend_model>Magelan\SearchCms\Block\Adminhtml\System\Config\RebuildButton</frontend_model>
                 </field>
             </group>
         </section>

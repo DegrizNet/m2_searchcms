@@ -1,0 +1,9 @@
+Magelan_SearchCms (degriznet/m2_searchcms)
+Copyright (c) 2026 Degriz. All rights reserved.
+
+Proprietary software. A licence is valid for one Magento installation (production plus its
+development and staging copies). You may modify the code for your own installation. You may not
+resell, sublicense or redistribute it, in original or modified form.
+
+The software is provided "as is", without warranty of any kind. Support and updates are provided
+under the terms of your purchase at https://www.degriz.net/.

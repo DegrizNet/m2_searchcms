@@ -1,0 +1,5 @@
+/**
+ * Hyvä with Tailwind 4 (Hyvä 1.4+): `npx hyva-sources` imports this file into the theme build when the module
+ * is listed in app/etc/hyva-themes.json (Observer/RegisterModuleForHyvaConfig).
+ */
+@source "../templates/hyva";

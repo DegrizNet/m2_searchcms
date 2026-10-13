@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <searchcms>
+            <general>
+                <!-- New installations: on. An upgrade from 1.x keeps the shop's previous state (Setup/Patch/Data/KeepPreviousEnabledState). -->
+                <enabled>1</enabled>
+                <position>above</position>
+                <max_results>5</max_results>
+                <show_snippet>1</show_snippet>
+            </general>
+            <content>
+                <excluded>no-route
+home
+enable-cookies
+privacy-policy-cookie-restriction-mode</excluded>
+                <include_blog>0</include_blog>
+                <min_length>0</min_length>
+            </content>
+        </searchcms>
+    </default>
+</config>

@@ -1,0 +1,25 @@
+<?php
+/**
+ * Magelan_SearchCms: "Rebuild the page search list" button (Stores > Configuration > Magelan > Search CMS Pages).
+ */
+
+declare(strict_types=1);
+
+use Magelan\SearchCms\Block\Adminhtml\System\Config\RebuildButton;
+use Magento\Framework\Escaper;
+
+/** @var RebuildButton $block */
+/** @var Escaper $escaper */
+?>
+<div class="mgl-searchcms-rebuild" data-mage-init='<?= $escaper->escapeHtmlAttr($block->getWidgetConfig()) ?>'>
+    <?php if (!$block->isBuilt()): ?>
+        <div class="message message-warning" data-role="mgl-searchcms-empty-warning">
+            <?= $escaper->escapeHtml(__('The page search list is empty, so the block finds no pages. Build it here, or run bin/magento setup:upgrade.')) ?>
+        </div>
+    <?php endif; ?>
+    <div class="message" data-role="mgl-searchcms-result" role="status" aria-live="polite" hidden></div>
+    <button type="button" class="action-default<?= $block->isBuilt() ? '' : ' primary' ?>" data-role="mgl-searchcms-rebuild">
+        <span><?= $escaper->escapeHtml(__('Rebuild the page search list')) ?></span>
+    </button>
+    <p class="note"><span><?= $escaper->escapeHtml(__('Command line: bin/magento magelan:searchcms:reindex')) ?></span></p>
+</div>

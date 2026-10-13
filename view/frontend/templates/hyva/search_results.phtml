@@ -1,0 +1,104 @@
+<?php
+/**
+ * Magelan_SearchCms: "Pages matching your search" (Hyvä, Tailwind). Server rendered, no Alpine and no
+ * JavaScript: the extra rows are in a <details> element.
+ *
+ * Colours: CSS variables on .mgl-cms-hv, by default derived from the theme colour --color-primary (Hyvä 1.4+).
+ * Override them in your theme CSS, e.g. .mgl-cms-hv { --mgl-cms-ink: #c2410c; --mgl-cms-mark: #ffedd5; }
+ */
+
+declare(strict_types=1);
+
+use Magelan\SearchCms\Block\SearchResults;
+use Magento\Framework\Escaper;
+
+/** @var SearchResults $block */
+/** @var Escaper $escaper */
+
+$viewModel = $block->getViewModel();
+$hits = $viewModel->getHits();
+$total = count($hits);
+if ($total === 0) {
+    return;
+}
+$desktop = $viewModel->getVisibleDesktop();
+$mobile = $viewModel->getVisibleMobile();
+$showSnippet = $viewModel->showSnippet();
+$position = $block->getPosition();
+$titleId = 'mgl-cms-title-' . $escaper->escapeHtmlAttr($position);
+
+$renderHit = static function ($hit, string $extraClass) use ($escaper, $showSnippet): string {
+    $html = '<li class="flex flex-col justify-center gap-0.5 min-h-14 py-3 border-t border-gray-100' . $extraClass . '">';
+    $html .= '<div class="flex items-center gap-2 min-w-0">';
+    $html .= '<a class="mgl-cms-hv__link block min-w-0 truncate leading-6 text-[15px] md:text-base font-semibold no-underline hover:underline" href="'
+        . $escaper->escapeUrl($hit->getUrl()) . '" title="' . $escaper->escapeHtmlAttr($hit->getTitle()) . '">'
+        . $escaper->escapeHtml($hit->getTitle()) . '</a>';
+    if ($hit->isBlogPost()) {
+        $html .= '<span class="shrink-0 rounded border border-gray-200 px-1.5 text-[11px] font-semibold uppercase leading-5 tracking-wide text-gray-600">'
+            . $escaper->escapeHtml(__('Blog')) . '</span>';
+    }
+    $html .= '</div>';
+    if ($showSnippet && $hit->getSnippetHtml() !== '') {
+        // Snippet is escaped text with <mark> elements only (Model\Search\Snippet).
+        $html .= '<p class="m-0 line-clamp-2 text-[13px] md:text-sm leading-normal text-gray-600">'
+            . $escaper->escapeHtml($hit->getSnippetHtml(), ['mark']) . '</p>';
+    }
+
+    return $html . '</li>';
+};
+?>
+<style>
+    .mgl-cms-hv{--mgl-cms-ink:#1d4ed8;--mgl-cms-soft:#eff6ff;--mgl-cms-mark:#dbeafe;--mgl-cms-radius:.5rem}
+    @supports (color:color-mix(in oklch,red,red)){.mgl-cms-hv{
+        --mgl-cms-ink:var(--color-primary-darker,var(--color-primary,#1d4ed8));
+        --mgl-cms-soft:color-mix(in oklch,var(--color-primary,#1d4ed8) 8%,#fff);
+        --mgl-cms-mark:color-mix(in oklch,var(--color-primary,#1d4ed8) 18%,#fff)}}
+    .mgl-cms-hv{border-radius:var(--mgl-cms-radius)}
+    .mgl-cms-hv__ink,.mgl-cms-hv__link,.mgl-cms-hv__link:hover{color:var(--mgl-cms-ink)}
+    .mgl-cms-hv__count{color:var(--mgl-cms-ink);background:var(--mgl-cms-soft)}
+    .mgl-cms-hv mark{background:var(--mgl-cms-mark);color:inherit;font-weight:700;padding:0 2px;border-radius:2px}
+    .mgl-cms-hv__link:focus-visible,.mgl-cms-hv summary:focus-visible{outline:2px solid var(--mgl-cms-ink);outline-offset:3px;border-radius:3px}
+    .mgl-cms-hv summary::-webkit-details-marker{display:none}
+    .mgl-cms-hv details[open]>summary .mgl-cms-hv__show,.mgl-cms-hv details:not([open])>summary .mgl-cms-hv__hide{display:none}
+    .mgl-cms-hv details[open]>summary svg{transform:rotate(180deg)}
+</style>
+<section class="cms-search-results mgl-cms-hv my-6 border border-gray-200 bg-white px-4 pt-4 md:px-6 md:pt-5"
+         aria-labelledby="<?= /* @noEscape */ $titleId ?>">
+    <div class="flex items-center gap-2.5 mb-1.5 md:mb-2.5">
+        <svg class="mgl-cms-hv__ink shrink-0" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 3v5h5M9 13h6M9 17h6"/>
+        </svg>
+        <h2 class="m-0 flex-1 md:flex-none text-base md:text-lg font-bold leading-snug" id="<?= /* @noEscape */ $titleId ?>">
+            <?= $escaper->escapeHtml(__('Pages matching your search')) ?>
+        </h2>
+        <span class="mgl-cms-hv__count shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold">
+            <span class="sr-only"><?= $escaper->escapeHtml(__('Number of pages:')) ?></span>
+            <?= (int) $total ?>
+        </span>
+    </div>
+    <ul class="m-0 p-0 list-none">
+        <?php foreach (array_slice($hits, 0, $desktop) as $index => $hit): ?>
+            <?= /* @noEscape */ $renderHit($hit, $index >= $mobile ? ' max-md:hidden' : '') ?>
+        <?php endforeach; ?>
+    </ul>
+    <?php if ($total > $mobile): ?>
+        <details class="border-t border-gray-100<?= $total <= $desktop ? ' md:hidden' : '' ?>">
+            <summary class="mgl-cms-hv__ink flex items-center gap-2 min-h-12 cursor-pointer list-none text-sm font-semibold">
+                <svg class="shrink-0 transition-transform motion-reduce:transition-none" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true" focusable="false">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+                <span class="mgl-cms-hv__show"><?= $escaper->escapeHtml(__('Show all %1', $total)) ?></span>
+                <span class="mgl-cms-hv__hide"><?= $escaper->escapeHtml(__('Hide extra pages')) ?></span>
+            </summary>
+            <ul class="m-0 p-0 list-none">
+                <?php foreach (array_slice($hits, $mobile, null, true) as $index => $hit): ?>
+                    <?= /* @noEscape */ $renderHit($hit, $index < $desktop ? ' md:hidden' : '') ?>
+                <?php endforeach; ?>
+            </ul>
+        </details>
+    <?php endif; ?>
+</section>

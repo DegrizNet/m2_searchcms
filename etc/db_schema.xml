@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magelan_SearchCms: the search list of CMS pages (and Magelan Blog posts), as plain folded text.
+ * Rebuilt by bin/magento magelan:searchcms:reindex or the button in the settings; kept fresh by
+ * observers on page/post save and delete. Columns ending in _f are folded (lower case, no diacritics).
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="magelan_searchcms_index" resource="default" engine="innodb" comment="Magelan Search CMS Pages: search list">
+        <column xsi:type="int" name="row_id" unsigned="true" nullable="false" identity="true" comment="Row ID"/>
+        <column xsi:type="varchar" name="entity_type" length="16" nullable="false" default="cms_page" comment="cms_page or blog_post"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="CMS page ID or blog post ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store view ID, 0 = all store views"/>
+        <column xsi:type="varchar" name="identifier" length="255" nullable="false" default="" comment="CMS page identifier or blog URL key"/>
+        <column xsi:type="varchar" name="title" length="255" nullable="false" default="" comment="Title"/>
+        <column xsi:type="text" name="title_f" nullable="true" comment="Title, folded"/>
+        <column xsi:type="text" name="heading_f" nullable="true" comment="Main heading, folded"/>
+        <column xsi:type="text" name="meta_f" nullable="true" comment="Meta title, keywords and description, folded"/>
+        <column xsi:type="mediumtext" name="body" nullable="true" comment="Plain text (for the excerpt)"/>
+        <column xsi:type="mediumtext" name="body_f" nullable="true" comment="Plain text, folded"/>
+        <column xsi:type="int" name="body_length" unsigned="true" nullable="false" default="0" comment="Plain text length in characters"/>
+        <column xsi:type="datetime" name="available_from" nullable="true" comment="Blog: publication date (UTC); null = always"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="row_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="MAGELAN_SEARCHCMS_INDEX_ENTITY_TYPE_ENTITY_ID_STORE_ID">
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+            <column name="store_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="MAGELAN_SEARCHCMS_INDEX_STORE_ID_STORE_STORE_ID"
+                    table="magelan_searchcms_index" column="store_id" referenceTable="store"
+                    referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="MAGELAN_SEARCHCMS_INDEX_STORE_ID_ENTITY_TYPE" indexType="btree">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+        </index>
+    </table>
+</schema>

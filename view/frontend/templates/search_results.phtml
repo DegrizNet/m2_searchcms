@@ -1,23 +1,81 @@
 <?php
-if ($block->isModuleEnabled()) { ?>
-<?php $cmsResults = $this->getCmsResults(); ?>
-<?php if ($cmsResults->getSize() > 0): ?>
-    <div class="cms-search-results">
-        <h3><?php echo $this->escapeHtml(__('Pages Matching Your Search:')); ?></h3>
-        <ul>
-            <?php foreach ($cmsResults as $cmsPage): ?>
-                <?php
-                if ($cmsPage->getData('page_layout') == 'custom') {
-                    continue;
-                }
-                ?>
-                <li>
-                    <a href="<?php echo $this->getCmsPageUrl($cmsPage->getIdentifier()); ?>">
-                        <?php echo $cmsPage->getTitle(); ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+/**
+ * Magelan_SearchCms: "Pages matching your search" (Luma). Server rendered, no JavaScript: the extra rows are
+ * in a <details> element. Styles: web/css/searchcms.css (CSS variables --mgl-cms-*).
+ */
+
+declare(strict_types=1);
+
+use Magelan\SearchCms\Block\SearchResults;
+use Magento\Framework\Escaper;
+
+/** @var SearchResults $block */
+/** @var Escaper $escaper */
+
+$viewModel = $block->getViewModel();
+$hits = $viewModel->getHits();
+$total = count($hits);
+if ($total === 0) {
+    return;
+}
+$desktop = $viewModel->getVisibleDesktop();
+$mobile = $viewModel->getVisibleMobile();
+$showSnippet = $viewModel->showSnippet();
+$titleId = 'mgl-cms-title-' . $escaper->escapeHtmlAttr($block->getPosition());
+
+$renderHit = static function ($hit, string $extraClass) use ($escaper, $showSnippet): string {
+    $html = '<li class="mgl-cms__hit' . $extraClass . '">';
+    $html .= '<div class="mgl-cms__row">';
+    $html .= '<a class="mgl-cms__link" href="' . $escaper->escapeUrl($hit->getUrl()) . '" title="'
+        . $escaper->escapeHtmlAttr($hit->getTitle()) . '">' . $escaper->escapeHtml($hit->getTitle()) . '</a>';
+    if ($hit->isBlogPost()) {
+        $html .= '<span class="mgl-cms__badge">' . $escaper->escapeHtml(__('Blog')) . '</span>';
+    }
+    $html .= '</div>';
+    if ($showSnippet && $hit->getSnippetHtml() !== '') {
+        // Snippet is escaped text with <mark> elements only (Model\Search\Snippet).
+        $html .= '<p class="mgl-cms__snippet">' . $escaper->escapeHtml($hit->getSnippetHtml(), ['mark']) . '</p>';
+    }
+
+    return $html . '</li>';
+};
+?>
+<section class="cms-search-results mgl-cms mgl-cms--<?= $escaper->escapeHtmlAttr($block->getPosition()) ?>"
+         aria-labelledby="<?= /* @noEscape */ $titleId ?>">
+    <div class="mgl-cms__head">
+        <svg class="mgl-cms__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 3v5h5M9 13h6M9 17h6"/>
+        </svg>
+        <h2 class="mgl-cms__title" id="<?= /* @noEscape */ $titleId ?>">
+            <?= $escaper->escapeHtml(__('Pages matching your search')) ?>
+        </h2>
+        <span class="mgl-cms__count">
+            <span class="mgl-cms__sr"><?= $escaper->escapeHtml(__('Number of pages:')) ?></span>
+            <?= (int) $total ?>
+        </span>
     </div>
-<?php endif; ?>
-<?php } ?>
+    <ul class="mgl-cms__list">
+        <?php foreach (array_slice($hits, 0, $desktop) as $index => $hit): ?>
+            <?= /* @noEscape */ $renderHit($hit, $index >= $mobile ? ' mgl-cms__hit--wide' : '') ?>
+        <?php endforeach; ?>
+    </ul>
+    <?php if ($total > $mobile): ?>
+        <details class="mgl-cms__more<?= $total <= $desktop ? ' mgl-cms__more--narrow' : '' ?>">
+            <summary class="mgl-cms__toggle">
+                <svg class="mgl-cms__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+                <span class="mgl-cms__show"><?= $escaper->escapeHtml(__('Show all %1', $total)) ?></span>
+                <span class="mgl-cms__hide"><?= $escaper->escapeHtml(__('Hide extra pages')) ?></span>
+            </summary>
+            <ul class="mgl-cms__list">
+                <?php foreach (array_slice($hits, $mobile, null, true) as $index => $hit): ?>
+                    <?= /* @noEscape */ $renderHit($hit, $index < $desktop ? ' mgl-cms__hit--narrow' : '') ?>
+                <?php endforeach; ?>
+            </ul>
+        </details>
+    <?php endif; ?>
+</section>

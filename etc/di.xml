@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magelan\SearchCms\Api\ContentSearchInterface" type="Magelan\SearchCms\Model\Search\ContentSearch"/>
+
+    <!-- Own log file: var/log/magelan_searchcms.log -->
+    <virtualType name="Magelan\SearchCms\Model\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/magelan_searchcms.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Magelan\SearchCms\Model\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">magelan_searchcms</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="file" xsi:type="object">Magelan\SearchCms\Model\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magelan\SearchCms\Model\Index\Indexer">
+        <arguments>
+            <argument name="logger" xsi:type="object">Magelan\SearchCms\Model\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Magelan\SearchCms\Observer\CmsPageSaved">
+        <arguments>
+            <argument name="logger" xsi:type="object">Magelan\SearchCms\Model\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Magelan\SearchCms\Observer\CmsPageDeleted">
+        <arguments>
+            <argument name="logger" xsi:type="object">Magelan\SearchCms\Model\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Magelan\SearchCms\Observer\BlogPostChanged">
+        <arguments>
+            <argument name="logger" xsi:type="object">Magelan\SearchCms\Model\Logger</argument>
+        </arguments>
+    </type>
+    <type name="Magelan\SearchCms\Controller\Adminhtml\Index\Rebuild">
+        <arguments>
+            <argument name="logger" xsi:type="object">Magelan\SearchCms\Model\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- The command list is built on every bin/magento call: load the indexer only when the command runs -->
+    <type name="Magelan\SearchCms\Console\Command\Reindex">
+        <arguments>
+            <argument name="indexer" xsi:type="object">Magelan\SearchCms\Model\Index\Indexer\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="magelan_searchcms_reindex" xsi:type="object">Magelan\SearchCms\Console\Command\Reindex</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
