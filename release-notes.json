@@ -1,0 +1,72 @@
+{
+    "module": "Magelan_SearchCms",
+    "package": "degriznet/m2_searchcms",
+    "releases": [
+        {
+            "version": "2.0.1",
+            "date": "2026-10-15",
+            "sl": [],
+            "en": []
+        },
+        {
+            "version": "2.0.0",
+            "date": "2026-10-13",
+            "sl": [
+                "Prenovljeno iskanje po straneh CMS: lasten iskalni seznam, razvrščanje zadetkov in izseki besedila z označenim iskanim izrazom.",
+                "Iskanje ne upošteva šumnikov in velikosti črk. Najprej se prikažejo strani z vsemi iskanimi besedami, šele nato z vsaj polovico.",
+                "Blok je nad ali pod izdelki. Na računalniku je prikazano nastavljivo število zadetkov (privzeto 5), na telefonu 3, ostali so pod Pokaži vse. Podprti sta temi Luma in Hyvä.",
+                "Nastavitve: položaj, največje število zadetkov, izseki, izključene strani in po želji tudi objave bloga Magelan. Seznam se osveži ob shranjevanju strani, v nastavitvah je tudi gumb za ponovno gradnjo.",
+                "Popravki: iskanje z odvečnimi presledki ne našteje več vseh strani, naslovi strani so pravilni. Na novih namestitvah je blok privzeto vklopljen."
+            ],
+            "en": [
+                "Rebuilt CMS page search: its own search list, ranking of results and text excerpts with the search term highlighted.",
+                "Search ignores diacritics and case. Pages with all the search words come first, and only then pages with at least half of them.",
+                "The block is above or below the products. On desktop a set number of results is shown (default 5), on phones 3, the rest are under Show all. Luma and Hyvä themes are supported.",
+                "Settings: position, maximum results, excerpts, excluded pages and, optionally, Magelan blog posts. The list refreshes when a page is saved and the settings have a rebuild button.",
+                "Fixes: a search with extra spaces no longer lists every page and page links are correct. On new installations the block is on by default."
+            ]
+        },
+        {
+            "version": "1.0.3",
+            "date": "2026-10-12",
+            "sl": [
+                "Stikalo za vklop zdaj deluje pravilno.",
+                "V iskanju se prikažejo samo aktivne strani trenutnega pogleda trgovine."
+            ],
+            "en": [
+                "The on/off switch now works correctly.",
+                "Only active pages of the current store view are found."
+            ]
+        },
+        {
+            "version": "1.0.2",
+            "date": "2026-10-11",
+            "sl": [
+                "Nastavitve modula so urejene v skupnem zavihku Magelan."
+            ],
+            "en": [
+                "Module settings are placed in the shared Magelan tab."
+            ]
+        },
+        {
+            "version": "1.0.1",
+            "date": "2026-10-10",
+            "sl": [
+                "Podpora za Magento 2.4.8 in 2.4.9 ter PHP do različice 8.4."
+            ],
+            "en": [
+                "Support for Magento 2.4.8 and 2.4.9 and PHP up to 8.4."
+            ]
+        },
+        {
+            "version": "1.0.0",
+            "date": "2024-07-28",
+            "sl": [
+                "Prva izdaja: strani CMS v rezultatih iskanja."
+            ],
+            "en": [
+                "First release: CMS pages in the search results."
+            ]
+        }
+    ]
+}

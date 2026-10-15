@@ -2,7 +2,7 @@
     "name": "degriznet/m2_searchcms",
     "description": "Magento 2: CMS pages (and Magelan Blog posts) in the search results, with excerpts, highlighted terms and ranking; Luma and Hyva.",
     "type": "magento2-module",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "license": "proprietary",
     "authors": [
         {

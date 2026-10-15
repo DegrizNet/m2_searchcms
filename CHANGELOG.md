@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 - 2026-10-15
+
+- Release notes for the module page.
+
 ## 2.0.0 - 2026-10-13
 
 "Iskanje po CMS straneh" (Search CMS Pages) rebuilt: own search list, ranking, excerpts, Hyvä.
